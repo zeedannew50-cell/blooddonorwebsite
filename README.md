@@ -80,13 +80,4 @@ On the dashboard, `build_dashboard()` uses:
 
 When a donor registers, `parse_donor()` checks the input. Bad input raises a `ValueError`, which the view catches and shows as a red message. If MongoDB is down, the view catches `PyMongoError` and shows an error instead of crashing.
 
-## Syllabus Mapping (ITL-V)
-
-| Syllabus Unit | Where it is used |
-|---|---|
-| I: Python basics, functions | Throughout the project |
-| II: Data types, comprehensions, lambda, exception handling | Dict of sets `CAN_RECEIVE_FROM`, tuple `BLOOD_GROUPS`, list comprehensions and a `lambda` sort key in `find_donors`, `try/except` in `parse_donor` and `views.py` |
-| III: Python and databases (CRUD) | `db.py`: `insert_one`, `find`, `update_one`, `delete_one` on MongoDB |
-| IV: NumPy | `np.mean`, `np.min`, `np.max` in `logic.py`; `np.linspace` in `burndown.py` |
-| V: Pandas + Matplotlib | DataFrame, `groupby`, `agg`, `reindex`, `value_counts` and charts in `logic.py`; `burndown.py` |
-| VI: Django (MVT, folder structure, flow of control) | The whole `blood_donor_finder/` project |
+|
