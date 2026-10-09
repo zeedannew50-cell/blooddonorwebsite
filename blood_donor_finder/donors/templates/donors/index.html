@@ -1,0 +1,59 @@
+{% extends 'donors/base.html' %}
+
+{% block content %}
+<div class="card">
+  <h2>Register as a Donor</h2>
+  <form class="row" method="post">
+    {% csrf_token %}
+    <div><label>Full name</label><input name="name" value="{{ form.name }}" required></div>
+    <div><label>Blood group</label>
+      <select name="blood_group" required>
+        {% for g in blood_groups %}
+          <option {% if form.blood_group == g %}selected{% endif %}>{{ g }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div><label>City</label><input name="city" value="{{ form.city }}" required></div>
+    <div><label>Phone (10 digits)</label><input name="phone" inputmode="numeric" pattern="[0-9]{10}" value="{{ form.phone }}" required></div>
+    <div><label>Age</label><input name="age" type="number" min="18" max="65" value="{{ form.age }}" required></div>
+    <div><label>Last donation (blank if never)</label><input name="last_donation" type="date" max="{{ today }}" value="{{ form.last_donation }}"></div>
+    <div><button type="submit">Register</button></div>
+  </form>
+</div>
+
+<div class="card">
+  <h2>All Donors ({{ donors|length }})</h2>
+  {% if donors %}
+  <div class="table-wrap">
+  <table>
+    <tr><th>Name</th><th>Group</th><th>City</th><th>Phone</th><th>Age</th><th>Status</th><th></th></tr>
+    {% for d in donors %}
+    <tr>
+      <td>{{ d.name }}</td>
+      <td><span class="group">{{ d.blood_group }}</span></td>
+      <td>{{ d.city }}</td>
+      <td>{{ d.phone }}</td>
+      <td>{{ d.age }}</td>
+      <td>
+        {% if d.eligible %}<span class="ready">Ready</span>
+        {% else %}<span class="resting">Resting until {{ d.next_date }}</span>{% endif %}
+      </td>
+      <td class="actions">
+        {% if d.eligible %}
+        <form method="post" action="{% url 'donated' d.id %}">
+          {% csrf_token %}<button type="submit" title="Record that this donor gave blood today">Donated today</button>
+        </form>
+        {% endif %}
+        <form method="post" action="{% url 'delete' d.id %}">
+          {% csrf_token %}<button class="grey" type="submit">Remove</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+  {% else %}
+  <p>No donors yet. Register the first one above.</p>
+  {% endif %}
+</div>
+{% endblock %}

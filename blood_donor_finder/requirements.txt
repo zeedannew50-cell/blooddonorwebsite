@@ -1,0 +1,6 @@
+django
+pymongo
+dnspython
+pandas
+numpy
+matplotlib

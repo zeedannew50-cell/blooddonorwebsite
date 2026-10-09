@@ -1,0 +1,47 @@
+{% extends 'donors/base.html' %}
+
+{% block content %}
+{% if s %}
+<div class="card">
+  <h2>Shortage Alert</h2>
+  {% if s.shortage %}
+    <div class="error">
+      Low on ready donors for:
+      {% for g in s.shortage %}<span class="group">{{ g }}</span> {% endfor %}
+      Run a donation drive for these groups.
+    </div>
+  {% else %}
+    <div class="ok">Every blood group has enough ready donors.</div>
+  {% endif %}
+</div>
+
+<div class="card stats">
+  <div class="stat">Registered donors<b>{{ s.total }}</b></div>
+  <div class="stat">Ready today<b class="ready">{{ s.ready }}</b></div>
+  <div class="stat">Resting<b>{{ s.resting }}</b></div>
+  <div class="stat">Cities covered<b>{{ s.cities }}</b></div>
+  <div class="stat">Average age<b>{{ s.average_age }}</b>youngest {{ s.youngest }}, oldest {{ s.oldest }}</div>
+</div>
+
+<div class="card">
+  <h2>Donors by Blood Group</h2>
+  <table>
+    <tr><th>Group</th><th>Registered</th><th>Ready today</th></tr>
+    {% for g, total, ready in s.by_group %}
+    <tr>
+      <td><span class="group">{{ g }}</span></td>
+      <td>{{ total }}</td>
+      <td {% if g in s.shortage %}style="color:#b71c1c;font-weight:700"{% endif %}>{{ ready }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="card charts">
+  <img src="data:image/png;base64,{{ s.group_chart }}" alt="Bar chart of ready donors per blood group">
+  <img src="data:image/png;base64,{{ s.city_chart }}" alt="Pie chart of donors by city">
+</div>
+{% elif not error %}
+<div class="card"><p>No donors yet. <a href="{% url 'index' %}">Register some donors</a> to see the dashboard.</p></div>
+{% endif %}
+{% endblock %}

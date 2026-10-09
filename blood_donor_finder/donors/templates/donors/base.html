@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blood Donor Finder</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f6f3f3; color: #222; margin: 0; }
+    header { background: #8e1b1b; color: #fff; padding: 14px 24px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+    header h1 { font-size: 20px; margin: 0; flex: 1; }
+    header a { color: #fff; text-decoration: none; font-weight: 600; }
+    main { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
+    .card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+    form.row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; align-items: end; }
+    label { font-size: 12px; color: #555; display: block; }
+    input, select, button { width: 100%; box-sizing: border-box; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; }
+    button { background: #8e1b1b; color: #fff; border: none; cursor: pointer; }
+    .actions { display: flex; gap: 6px; }
+    .actions button { padding: 4px 8px; font-size: 12px; }
+    button.grey { background: #777; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
+    .group { display: inline-block; background: #8e1b1b; color: #fff; border-radius: 4px; padding: 2px 8px; font-weight: 700; }
+    .ready { color: #1b5e20; font-weight: 600; }
+    .resting { color: #999; }
+    .error { background: #fdecea; color: #b71c1c; padding: 10px; border-radius: 4px; margin-bottom: 12px; }
+    .ok { background: #e8f5e9; color: #1b5e20; padding: 10px; border-radius: 4px; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .stat b { display: block; font-size: 22px; }
+    .charts { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+    .charts img { max-width: 100%; }
+    .table-wrap { overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Blood Donor Finder</h1>
+    <a href="{% url 'search' %}">Find Donors</a>
+    <a href="{% url 'index' %}">Donors</a>
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+  </header>
+  <main>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

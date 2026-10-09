@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kanban Board</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #f3eeee; margin: 0; padding: 20px; color: #222; }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  p.sub { margin: 0 0 16px; color: #555; }
+  .bar { margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .bar button { padding: 8px 14px; border: none; border-radius: 4px; background: #8e1b1b; color: #fff; cursor: pointer; }
+  .board { display: grid; grid-template-columns: repeat(5, minmax(180px, 1fr)); gap: 12px; overflow-x: auto; }
+  .col { background: #e6dede; border-radius: 8px; padding: 10px; min-height: 420px; }
+  .col h2 { font-size: 14px; text-transform: uppercase; margin: 0 0 10px; display: flex; justify-content: space-between; }
+  .col.over { outline: 2px dashed #8e1b1b; }
+  .card { background: #fff; border-radius: 6px; padding: 10px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,.15); cursor: grab; border-left: 4px solid #8e1b1b; }
+  .card b { display: block; font-size: 12px; color: #666; }
+  .card .pts { float: right; background: #8e1b1b; color: #fff; border-radius: 10px; padding: 0 8px; font-size: 12px; }
+  .card.future { border-left-color: #999; }
+  .legend { margin-top: 16px; font-size: 13px; color: #555; }
+</style>
+</head>
+<body>
+<h1>Kanban Board: Blood Donor Finder</h1>
+<p class="sub">Sprint 1 (10 days, 30 story points). Drag cards between columns to update their status.</p>
+
+<div class="bar">
+  <button onclick="load(DAY7)">Show Day 7 (mid-sprint)</button>
+  <button onclick="load(END)">Show End of Sprint</button>
+</div>
+
+<div class="board" id="board"></div>
+
+<p class="legend">Red-edged cards = Sprint 1 stories. Grey-edged cards = Product Backlog (future sprints). Number = story points.</p>
+
+<script>
+const COLUMNS = ['Backlog', 'To Do', 'In Progress', 'Testing', 'Done'];
+
+const STORIES = {
+  'US-01': ['Register as a donor', 3],
+  'US-02': ['View all donors', 2],
+  'US-03': ['Input validation', 3],
+  'US-04': ['Save donors in MongoDB', 5],
+  'US-05': ['Emergency donor search', 5],
+  'US-06': ['Record a donation', 2],
+  'US-07': ['Remove a donor', 2],
+  'US-08': ['Donor dashboard + charts', 5],
+  'US-09': ['Shortage alert', 3],
+  'US-10': ['SMS/WhatsApp alert to donors', 8],
+  'US-11': ['Donor login', 8],
+  'US-12': ['Map of nearby donors', 5],
+  'US-13': ['Hospital blood requests', 5],
+};
+const FUTURE = ['US-10', 'US-11', 'US-12', 'US-13'];
+
+// Which column each story is in, at two points in the sprint
+const DAY7 = {
+  'Backlog': FUTURE,
+  'To Do': ['US-08', 'US-09'],
+  'In Progress': ['US-07'],
+  'Testing': ['US-06'],
+  'Done': ['US-01', 'US-02', 'US-04', 'US-03', 'US-05'],
+};
+const END = {
+  'Backlog': FUTURE,
+  'To Do': [], 'In Progress': [], 'Testing': [],
+  'Done': ['US-01', 'US-02', 'US-03', 'US-04', 'US-05', 'US-06', 'US-07', 'US-08', 'US-09'],
+};
+
+const board = document.getElementById('board');
+
+function load(state) {
+  board.innerHTML = '';
+  for (const name of COLUMNS) {
+    const col = document.createElement('div');
+    col.className = 'col';
+    col.innerHTML = `<h2>${name} <span></span></h2>`;
+    col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('over'); });
+    col.addEventListener('dragleave', () => col.classList.remove('over'));
+    col.addEventListener('drop', e => {
+      e.preventDefault();
+      col.classList.remove('over');
+      col.appendChild(document.getElementById(e.dataTransfer.getData('text')));
+      updateTotals();
+    });
+    for (const id of state[name]) col.appendChild(makeCard(id));
+    board.appendChild(col);
+  }
+  updateTotals();
+}
+
+function makeCard(id) {
+  const [title, pts] = STORIES[id];
+  const card = document.createElement('div');
+  card.className = 'card' + (FUTURE.includes(id) ? ' future' : '');
+  card.id = id;
+  card.draggable = true;
+  card.dataset.pts = pts;
+  card.innerHTML = `<span class="pts">${pts}</span><b>${id}</b>${title}`;
+  card.addEventListener('dragstart', e => e.dataTransfer.setData('text', id));
+  return card;
+}
+
+// Show total story points in each column header
+function updateTotals() {
+  for (const col of board.children) {
+    const pts = [...col.querySelectorAll('.card')].reduce((sum, c) => sum + Number(c.dataset.pts), 0);
+    col.querySelector('h2 span').textContent = pts + ' pts';
+  }
+}
+
+load(DAY7);
+</script>
+</body>
+</html>

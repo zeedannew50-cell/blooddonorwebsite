@@ -1,0 +1,45 @@
+{% extends 'donors/base.html' %}
+
+{% block content %}
+<div class="card">
+  <h2>Emergency: Find Blood Donors</h2>
+  <p>Enter the <b>patient's</b> blood group and city. We show every compatible donor who can donate today. Donors in the same city are listed first.</p>
+  <form class="row" method="get">
+    <div><label>Patient's blood group</label>
+      <select name="blood_group" required>
+        {% for g in blood_groups %}
+          <option {% if group == g %}selected{% endif %}>{{ g }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div><label>City</label><input name="city" value="{{ city }}" placeholder="e.g. Pune"></div>
+    <div><button type="submit">Search</button></div>
+  </form>
+</div>
+
+{% if results is not None %}
+<div class="card">
+  <h2>{{ results|length }} donor{{ results|length|pluralize }} can give blood to a <span class="group">{{ group }}</span> patient</h2>
+  {% if resting %}
+    <p class="resting">{{ resting }} more compatible donor{{ resting|pluralize }} donated in the last {{ gap_days }} days and must rest.</p>
+  {% endif %}
+  {% if results %}
+  <div class="table-wrap">
+  <table>
+    <tr><th>Name</th><th>Group</th><th>City</th><th>Phone</th></tr>
+    {% for d in results %}
+    <tr>
+      <td>{{ d.name }}</td>
+      <td><span class="group">{{ d.blood_group }}</span></td>
+      <td>{{ d.city }}{% if d.same_city %} <span class="ready">(same city)</span>{% endif %}</td>
+      <td><a href="tel:{{ d.phone }}">{{ d.phone }}</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+  {% else %}
+    <div class="error">No donor is available right now. Contact the nearest blood bank.</div>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
